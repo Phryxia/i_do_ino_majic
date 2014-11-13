@@ -1,4 +1,22 @@
-import processing.net.*;
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import processing.net.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class VirtualGenerator extends PApplet {
+
+
 
 /*
   This program generates random pseudo signal.
@@ -7,10 +25,10 @@ import processing.net.*;
   Helpful for I Do Ino's project : Majik.
 */
 Server myServer;
-void setup()
+public void setup()
 {
   size(400, 200);
-  colorMode(HSB, 1.0);
+  colorMode(HSB, 1.0f);
   background(0);
   myServer = new Server(this, 5204);
   
@@ -27,30 +45,30 @@ int t_time = 0;
 boolean isBusy = false;
 float cooltime = 1;
 float temp_cooltime = 1;
-void draw()
+public void draw()
 {
   // Make Random Event
   if(!isBusy)
   {
-    if(cooltime < 0.1)
+    if(cooltime < 0.1f)
     {
       // Select Mode
       float dice = random(1);
-      if(0 <= dice && dice < 0.7)
+      if(0 <= dice && dice < 0.7f)
       {
         mode = 1;
       }
-      else if(0.7 <= dice && dice < 1)
+      else if(0.7f <= dice && dice < 1)
       {
         mode = 2;
       }
-      cooltime = 1.0;
+      cooltime = 1.0f;
     }
     else
     {
       // Wait for the Cooltime
       mode = 0;
-      cooltime *= random(0.95, 0.995);
+      cooltime *= random(0.95f, 0.995f);
     }
   }
   
@@ -58,7 +76,7 @@ void draw()
   switch(mode)
   {
     default:
-      data = int(2048*random(-1.0, 1.0));
+      data = PApplet.parseInt(2048*random(-1.0f, 1.0f));
       break;
     case 1:
       // Make Random Sinus Data
@@ -67,8 +85,8 @@ void draw()
         // Make Busy State On
         t = 0;
         size   = random(32768, 65535);
-        freq   = random(0.2, 4.0);
-        t_time = int(random(50, 150));
+        freq   = random(0.2f, 4.0f);
+        t_time = PApplet.parseInt(random(50, 150));
         isBusy = true;
       }
       else
@@ -81,9 +99,9 @@ void draw()
         ++t;
       }
       
-      freq += random(-0.02, 0.02);
+      freq += random(-0.02f, 0.02f);
       
-      data = int(size*sin((freq)*TWO_PI*t/100.0)+250-random(500));
+      data = PApplet.parseInt(size*sin((freq)*TWO_PI*t/100.0f)+250-random(500));
       break;
     case 2:
       // Make Random Impulse
@@ -91,7 +109,7 @@ void draw()
       {
         t = 0;
         size  = random(32768, 65535);
-        t_time = int(random(10)+10);
+        t_time = PApplet.parseInt(random(10)+10);
         isBusy = true;
       }
       else
@@ -103,7 +121,7 @@ void draw()
         ++t;
       }
       
-      data = int(size*exp(-2.0*t/t_time)+250-random(500));
+      data = PApplet.parseInt(size*exp(-2.0f*t/t_time)+250-random(500));
       break;
   }
   
@@ -118,7 +136,7 @@ void draw()
     }
     pixels[y*width+width-1] = color(0);
   }
-  int ypos = int((0.5-data/131071.0)*height);
+  int ypos = PApplet.parseInt((0.5f-data/131071.0f)*height);
   if(0 <= ypos && ypos < height)
   {
     pixels[ypos*width+width-1] = color(0, 1, 1);
@@ -128,11 +146,20 @@ void draw()
   writeInt(data); // -65536 ~ 65535
 }
 
-void writeInt(int x)
+public void writeInt(int x)
 {
   for(int i=0; i<4; ++i)
   {
     myServer.write(x & 0xFF);
     x >>= 8;
+  }
+}
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "VirtualGenerator" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
   }
 }
