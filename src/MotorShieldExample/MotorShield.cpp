@@ -2,8 +2,7 @@
 #include "MotorShield.h"
 
 static int current_speed   = 0;
-static int current_speed_l = 0;
-static int current_speed_r = 0;
+static float current_dir = 0;
 
 /*
   RESET MOTOR SHILED DIGITAL IO
@@ -93,8 +92,8 @@ void MS_brake(int m_channel)
 
 void MS_go(void)
 {
-  MS_accel(CH_A, FORWARD, current_speed_l);
-  MS_accel(CH_B, FORWARD, current_speed_r);
+  MS_accel(CH_A, FORWARD, int(+current_dir*current_speed/2.0 + current_speed));
+  MS_accel(CH_B, FORWARD, int(-current_dir*current_speed/2.0 + current_speed));
 }
 
 void MS_stop(void)
@@ -106,20 +105,9 @@ void MS_stop(void)
 /*
   ABOUT TURN
 */
-void MS_turn(int m_direction, float turn_speed)
+void MS_setDirection(float dir)
 {
-  if(m_direction)
-  {
-    // RIGHT
-    current_speed_r = current_speed;
-    current_speed_l = (int)(current_speed*(1.0f-turn_speed));
-  }
-  else
-  {
-    // LEFT
-    current_speed_r = (int)(current_speed*(1.0f-turn_speed));
-    current_speed_l = current_speed;
-  }
+  current_dir = dir;
 }
 
 void MS_setSpeed(int m_speed)

@@ -34,8 +34,8 @@ void MS_init(void);
 */
 void MS_go(void);
 void MS_stop(void);
-void MS_turn(int m_direction, float turn_speed);
 
+void MS_setDirection(float dir);
 void MS_setSpeed(int m_speed);
 
 #endif

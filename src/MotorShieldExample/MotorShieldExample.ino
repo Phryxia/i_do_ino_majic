@@ -1,23 +1,37 @@
 #include "MotorShield.h"
-int x = 0;
-float u = 0.0f;
+
+int t = 0;
 void setup()
 {
   MS_init();
+  pinMode(10, OUTPUT);
 }
+
+int gostop = 1;
 
 void loop()
 {
-  MS_go();
-  MS_setSpeed(x = (x+1)%255);
-  MS_turn(LEFT, u);
-  
-  if(u < 1.0f)
+  if(gostop == 1)
   {
-    u += 0.01f;
+    MS_go();
   }
   else
   {
-    u = 0.0f;
+    MS_stop();
   }
+  MS_setSpeed(t);
+  MS_setDirection(t/255.0f);
+  
+  analogWrite(10, t);
+  
+  if(t == 255)
+  {
+    t = 0;
+    gostop = 1-gostop;
+  }
+  else
+  {
+    ++t;
+  }
+  delay(10);
 }
